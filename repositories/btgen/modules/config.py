@@ -160,7 +160,7 @@ def get_config_item_or_set_default(key, default_value, validator, disable_empty_
 
 default_base_model_name = get_config_item_or_set_default(
     key='default_model',
-    default_value='model.safetensors',
+    default_value='juggernautXL_v8Rundiffusion.safetensors',
     validator=lambda x: isinstance(x, str)
 )
 previous_default_models = get_config_item_or_set_default(
