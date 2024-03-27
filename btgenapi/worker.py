@@ -96,6 +96,7 @@ def process_generate(async_task: QueueTask):
             return random.randint(constants.MIN_SEED, constants.MAX_SEED)
         
     def progressbar(_, number, text):
+        print(f'[Fooocus] {text}')
         outputs.append(['preview', (number, text, None)])
 
     def yield_result(_, imgs, tasks):
@@ -174,6 +175,7 @@ def process_generate(async_task: QueueTask):
             inpaint_input_image['mask'] = HWC3(inpaint_input_image['mask'])
             inpaint_mask_image_upload = inpaint_input_image['mask']
 
+        # Fooocus async_worker.py code start
 
         outpaint_selections = [o.lower() for o in outpaint_selections]
         base_model_additional_loras = []
@@ -381,8 +383,6 @@ def process_generate(async_task: QueueTask):
         if advanced_parameters.overwrite_height > 0:
             height = advanced_parameters.overwrite_height
 
-        print(f'[Parameters] Sampler = {sampler_name} - {scheduler_name}')
-        print(f'[Parameters] Steps = {steps} - {switch}')
 
         progressbar(async_task, 1, 'Initializing ...')
 
@@ -414,8 +414,6 @@ def process_generate(async_task: QueueTask):
 
                 task_prompt = apply_wildcards(prompt, task_rng)
                 task_negative_prompt = apply_wildcards(negative_prompt, task_rng)
-                print("----------------------------------")
-                print(task_negative_prompt)
                 task_extra_positive_prompts = [apply_wildcards(pmt, task_rng) for pmt in extra_positive_prompts]
                 task_extra_negative_prompts = [apply_wildcards(pmt, task_rng) for pmt in extra_negative_prompts]
 
@@ -455,9 +453,8 @@ def process_generate(async_task: QueueTask):
 
             if use_expansion:
                 for i, t in enumerate(tasks):
-                    progressbar(async_task, 5, f'Preparing BTGen text #{i + 1} ...')
+                    progressbar(async_task, 5, f'Preparing Fooocus text #{i + 1} ...')
                     expansion = pipeline.final_expansion(t['task_prompt'], t['task_seed'])
-                    print(f'[Prompt Expansion] {expansion}')
                     t['expansion'] = expansion
                     t['positive'] = copy.deepcopy(t['positive']) + [expansion]  # Deep copy.
 
@@ -485,10 +482,8 @@ def process_generate(async_task: QueueTask):
 
             shape_ceil = get_image_shape_ceil(uov_input_image)
             if shape_ceil < 1024:
-                print(f'[Vary] Image is resized because it is too small.')
                 shape_ceil = 1024
             elif shape_ceil > 2048:
-                print(f'[Vary] Image is resized because it is too big.')
                 shape_ceil = 2048
 
             uov_input_image = set_image_shape_ceil(uov_input_image, shape_ceil)
@@ -713,6 +708,7 @@ def process_generate(async_task: QueueTask):
                 cn_img, cn_stop, cn_weight = task
                 cn_img = HWC3(cn_img)
 
+                # https://github.com/tencent-ailab/IP-Adapter/blob/d580c50a291566bbf9fc7ac0f760506607297e6d/README.md?plain=1#L75
                 cn_img = resize_image(cn_img, width=224, height=224, resize_mode=0)
 
                 task[0] = ip_adapter.preprocess(cn_img, ip_adapter_path=ip_adapter_path)
@@ -726,6 +722,7 @@ def process_generate(async_task: QueueTask):
                 if not advanced_parameters.skipping_cn_preprocessor:
                     cn_img = face_crop.crop_image(cn_img)
 
+                # https://github.com/tencent-ailab/IP-Adapter/blob/d580c50a291566bbf9fc7ac0f760506607297e6d/README.md?plain=1#L75
                 cn_img = resize_image(cn_img, width=224, height=224, resize_mode=0)
 
                 task[0] = ip_adapter.preprocess(cn_img, ip_adapter_path=ip_adapter_face_path)

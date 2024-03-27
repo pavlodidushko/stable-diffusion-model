@@ -32,7 +32,7 @@ from gradio.events import (
 from gradio.interpretation import TokenInterpretable
 
 set_documentation_group("component")
-_Image.init() 
+_Image.init()  # fixes https://github.com/gradio-app/gradio/issues/2843
 
 
 @document()

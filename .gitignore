@@ -13,10 +13,11 @@ lena_result.png
 lena_test.py
 user_path_config.txt
 user_path_config-deprecated.txt
+*.safetensors
 build_chb.py
 experiment.py
 /modules/*.png
-
+/repositories/btgen/outputs
 /venv
 /tmp
 /ui-config.json

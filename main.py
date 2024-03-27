@@ -9,10 +9,11 @@ from threading import Thread
 
 from btgen_api_version import version
 from btgenapi.repositories_versions import btgen_commit_hash
+
+
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 
-print('[System ARGV] ' + str(sys.argv))
 
 os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
 os.environ["PYTORCH_MPS_HIGH_WATERMARK_RATIO"] = "0.0"
@@ -49,7 +50,6 @@ def git_clone(url, dir, name, hash=None):
             repo = pygit2.Repository(dir)
             remote_url = repo.remotes['origin'].url
             if remote_url not in [btgen_github_repo]:
-                print(f'{name} exists but remote URL will be updated.')
                 del repo
                 raise url
             else:
@@ -70,9 +70,7 @@ def git_clone(url, dir, name, hash=None):
         repo.checkout_tree(commit, strategy=pygit2.GIT_CHECKOUT_FORCE)
         repo.set_head(commit.id)
 
-        print(f'{name} checkout finished for {hash}.')
     except Exception as e:
-        print(f'Git clone failed for {name}: {str(e)}')
         raise e
 
 
@@ -119,8 +117,6 @@ def run_pip(command, desc=None, live=default_command_live):
         return run(f'"{python}" -m pip {command} --prefer-binary{index_url_line}', desc=f"Installing {desc}",
                    errdesc=f"Couldn't install {desc}", live=live)
     except Exception as e:
-        print(e)
-        print(f'CMD Failed {desc}: {command}')
         return None
 
 
@@ -170,11 +166,9 @@ def download_repositories():
     https_proxy = os.environ.get('HTTPS_PROXY')
 
     if http_proxy is not None:
-        print(f"Using http proxy for git clone: {http_proxy}")
         os.environ['http_proxy'] = http_proxy
 
     if https_proxy is not None:
-        print(f"Using https proxy for git clone: {https_proxy}")
         os.environ['https_proxy'] = https_proxy
 
     try:
@@ -197,37 +191,37 @@ def is_installed(package):
     return spec is not None
 
 
-def download_models():
-    vae_approx_filenames = [
-        ('xlvaeapp.pth', 'https://huggingface.co/lllyasviel/misc/resolve/main/xlvaeapp.pth'),
-        ('vaeapp_sd15.pth', 'https://huggingface.co/lllyasviel/misc/resolve/main/vaeapp_sd15.pt'),
-        ('xl-to-v1_interposer-v3.1.safetensors',
-         'https://huggingface.co/lllyasviel/misc/resolve/main/xl-to-v1_interposer-v3.1.safetensors')
-    ]
+# def download_models():
+#     vae_approx_filenames = [
+#         ('xlvaeapp.pth', 'https://huggingface.co/lllyasviel/misc/resolve/main/xlvaeapp.pth'),
+#         ('vaeapp_sd15.pth', 'https://huggingface.co/lllyasviel/misc/resolve/main/vaeapp_sd15.pt'),
+#         ('xl-to-v1_interposer-v3.1.safetensors',
+#          'https://huggingface.co/lllyasviel/misc/resolve/main/xl-to-v1_interposer-v3.1.safetensors')
+#     ]
 
-    from modules.model_loader import load_file_from_url
-    from modules.config import (path_checkpoints as modelfile_path,
-                                path_loras as lorafile_path,
-                                path_vae_approx as vae_approx_path,
-                                path_btgen_expansion as btgen_expansion_path,
-                                checkpoint_downloads,
-                                path_embeddings as embeddings_path,
-                                embeddings_downloads, lora_downloads)
+#     from modules.model_loader import load_file_from_url
+#     from modules.config import (path_checkpoints as modelfile_path,
+#                                 path_loras as lorafile_path,
+#                                 path_vae_approx as vae_approx_path,
+#                                 path_btgen_expansion as btgen_expansion_path,
+#                                 checkpoint_downloads,
+#                                 path_embeddings as embeddings_path,
+#                                 embeddings_downloads, lora_downloads)
 
-    for file_name, url in checkpoint_downloads.items():
-        load_file_from_url(url=url, model_dir=modelfile_path, file_name=file_name)
-    for file_name, url in embeddings_downloads.items():
-        load_file_from_url(url=url, model_dir=embeddings_path, file_name=file_name)
-    for file_name, url in lora_downloads.items():
-        load_file_from_url(url=url, model_dir=lorafile_path, file_name=file_name)
-    for file_name, url in vae_approx_filenames:
-        load_file_from_url(url=url, model_dir=vae_approx_path, file_name=file_name)
+#     for file_name, url in checkpoint_downloads.items():
+#         load_file_from_url(url=url, model_dir=modelfile_path, file_name=file_name)
+#     for file_name, url in embeddings_downloads.items():
+#         load_file_from_url(url=url, model_dir=embeddings_path, file_name=file_name)
+#     for file_name, url in lora_downloads.items():
+#         load_file_from_url(url=url, model_dir=lorafile_path, file_name=file_name)
+#     for file_name, url in vae_approx_filenames:
+#         load_file_from_url(url=url, model_dir=vae_approx_path, file_name=file_name)
 
-    load_file_from_url(
-        url='https://huggingface.co/lllyasviel/misc/resolve/main/fooocus_expansion.bin',
-        model_dir=btgen_expansion_path,
-        file_name='pytorch_model.bin'
-    )
+#     load_file_from_url(
+#         url='https://huggingface.co/lllyasviel/misc/resolve/main/fooocus_expansion.bin',
+#         model_dir=btgen_expansion_path,
+#         file_name='pytorch_model.bin'
+#     )
 
 
 def install_dependents(args):
@@ -240,7 +234,6 @@ def install_dependents(args):
             run_pip(f"install -r \"{requirements_file}\"", "requirements")
 
         if not is_installed("torch") or not is_installed("torchvision"):
-            print(f"torch_index_url: {torch_index_url}")
             run_pip(f"install torch==2.1.0 torchvision==0.16.0 --extra-index-url {torch_index_url}", "torch")
 
         if args.persistent and not is_installed("sqlalchemy"):
@@ -249,18 +242,13 @@ def install_dependents(args):
     skip_sync_repo = False
     if args.sync_repo is not None:
         if args.sync_repo == 'only':
-            print("Only download and sync depent repositories")
             download_repositories()
             models_path = os.path.join(
                 script_path, dir_repos, btgen_name, "models")
-            print(
-                f"Sync repositories successful. Now you can put model files in subdirectories of '{models_path}'")
             return False
         elif args.sync_repo == 'skip':
             skip_sync_repo = True
         else:
-            print(
-                f"Invalid value for argument '--sync-repo', acceptable value are 'skip' and 'only'")
             exit(1)
 
     # if not skip_sync_repo:
@@ -276,7 +264,6 @@ def install_dependents(args):
 def prepare_environments(args) -> bool:
     if args.gpu_device_id is not None:
         os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu_device_id)
-        print("Set device to:", args.gpu_device_id)
 
     if args.base_url is None or len(args.base_url.strip()) == 0:
         host = args.host
@@ -307,7 +294,7 @@ def prepare_environments(args) -> bool:
     parameters.default_aspect_ratio = parameters.get_aspect_ratio_value(config.default_aspect_ratio)
     parameters.available_aspect_ratios = [parameters.get_aspect_ratio_value(a) for a in config.available_aspect_ratios]
 
-    download_models()
+    # download_models()
 
     if args.preload_pipeline:
         preplaod_pipeline()
@@ -346,7 +333,6 @@ def pre_setup(skip_sync_repo: bool = False,
         gpu_device_id = None
         apikey = None
 
-    print("[Pre Setup] Prepare environments")
 
     args = Args()
     if skip_sync_repo:
@@ -379,20 +365,16 @@ def pre_setup(skip_sync_repo: bool = False,
         config.downloading_controlnet_canny()
         config.downloading_controlnet_cpds()
         config.downloading_ip_adapters()
-    print("[Pre Setup] Finished")
 
 
 def preplaod_pipeline():
-    print("Preload pipeline")
     import modules.default_pipeline as _
 
 
 if __name__ == "__main__":
-    print(f"Python {sys.version}")
 
-
+    
     from btgenapi.base_args import add_base_args
-
     parser = argparse.ArgumentParser()
     add_base_args(parser, True)
 
@@ -400,7 +382,8 @@ if __name__ == "__main__":
     install_dependents(args)
 
     from btgenapi.args import args
-
+    from repositories.btgen.launch import download_models
+    download_models()
     if prepare_environments(args):
         sys.argv = [sys.argv[0]]
 

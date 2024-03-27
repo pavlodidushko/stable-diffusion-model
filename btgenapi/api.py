@@ -178,7 +178,6 @@ def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
     if accept_query is not None and len(accept_query) > 0:
         accept = accept_query
     result = []
-    print("req is ", req)
     for text_prompt in req.text_prompts:        
         req.prompt = text_prompt
         tmp = generate_work(req)
