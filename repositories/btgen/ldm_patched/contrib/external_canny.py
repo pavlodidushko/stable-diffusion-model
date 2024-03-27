@@ -1,6 +1,5 @@
 
 
-#From https://github.com/kornia/kornia
 import math
 
 import torch
