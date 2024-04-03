@@ -73,7 +73,6 @@ def load_file_from_url(url, model_dir=None, progress=True, file_name=None, save_
         filename = file_name
     cached_file = os.path.abspath(os.path.join(save_dir, filename))
     if not os.path.exists(cached_file):
-        print(f'Downloading: "{url}" to {cached_file}\n')
         download_url_to_file(url, cached_file, hash_prefix=None, progress=progress)
     return cached_file
 

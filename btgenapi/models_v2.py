@@ -26,6 +26,7 @@ class SimpleText2ImgRequestWithPrompt(BaseModel):
     prompt: str = ''
     image_number: int = 10
     image_prompts: List[str] = []
+    token: str = ''
 
     
 
@@ -34,7 +35,16 @@ class Text2ImgRequestWithPrompt(Text2ImgRequest):
 
 
 class Text2ImgRequestWithPromptMulti(SimpleText2ImgRequestWithPrompt):
-    text_prompts: List[str] = []
+    text_prompts: List[str] = [  "summer",
+  "spring",
+  "cocktail_party",
+  "date_night",
+  "vacation",
+  "bachelorette_weekend",
+  "formal_wedding",
+  "semi_formal_wedding",
+  "destination_wedding",
+  "garden_party_wedding",]
 
 class ImgUpscaleOrVaryRequestJson(Text2ImgRequest):
     uov_method: UpscaleOrVaryMethod = "Upscale (2x)"

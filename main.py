@@ -191,37 +191,6 @@ def is_installed(package):
     return spec is not None
 
 
-# def download_models():
-#     vae_approx_filenames = [
-#         ('xlvaeapp.pth', 'https://huggingface.co/lllyasviel/misc/resolve/main/xlvaeapp.pth'),
-#         ('vaeapp_sd15.pth', 'https://huggingface.co/lllyasviel/misc/resolve/main/vaeapp_sd15.pt'),
-#         ('xl-to-v1_interposer-v3.1.safetensors',
-#          'https://huggingface.co/lllyasviel/misc/resolve/main/xl-to-v1_interposer-v3.1.safetensors')
-#     ]
-
-#     from modules.model_loader import load_file_from_url
-#     from modules.config import (path_checkpoints as modelfile_path,
-#                                 path_loras as lorafile_path,
-#                                 path_vae_approx as vae_approx_path,
-#                                 path_btgen_expansion as btgen_expansion_path,
-#                                 checkpoint_downloads,
-#                                 path_embeddings as embeddings_path,
-#                                 embeddings_downloads, lora_downloads)
-
-#     for file_name, url in checkpoint_downloads.items():
-#         load_file_from_url(url=url, model_dir=modelfile_path, file_name=file_name)
-#     for file_name, url in embeddings_downloads.items():
-#         load_file_from_url(url=url, model_dir=embeddings_path, file_name=file_name)
-#     for file_name, url in lora_downloads.items():
-#         load_file_from_url(url=url, model_dir=lorafile_path, file_name=file_name)
-#     for file_name, url in vae_approx_filenames:
-#         load_file_from_url(url=url, model_dir=vae_approx_path, file_name=file_name)
-
-#     load_file_from_url(
-#         url='https://huggingface.co/lllyasviel/misc/resolve/main/fooocus_expansion.bin',
-#         model_dir=btgen_expansion_path,
-#         file_name='pytorch_model.bin'
-#     )
 
 
 def install_dependents(args):
@@ -229,7 +198,7 @@ def install_dependents(args):
         torch_index_url = os.environ.get('TORCH_INDEX_URL', "https://download.pytorch.org/whl/cu121")
 
         # Check if you need pip install
-        requirements_file = 'requirements.txt'
+        requirements_file = os.path.dirname(os.path.realpath(__file__)) + '/requirements.txt'
         if not requirements_met(requirements_file):
             run_pip(f"install -r \"{requirements_file}\"", "requirements")
 
@@ -291,7 +260,7 @@ def prepare_environments(args) -> bool:
     parameters.default_loras = config.default_loras
     parameters.default_cfg_scale = config.default_cfg_scale
     parameters.default_prompt_negative = config.default_prompt_negative
-    parameters.default_aspect_ratio = parameters.get_aspect_ratio_value(config.default_aspect_ratio)
+    parameters.default_aspect_ratio = "800*1120"
     parameters.available_aspect_ratios = [parameters.get_aspect_ratio_value(a) for a in config.available_aspect_ratios]
 
     # download_models()

@@ -168,7 +168,7 @@ with shared.gradio_root:
                                                  choices=modules.flags.performance_selections,
                                                  value=modules.config.default_performance)
                 aspect_ratios_selection = gr.Radio(label='Aspect Ratios', choices=modules.config.available_aspect_ratios,
-                                                   value=modules.config.default_aspect_ratio, info='width × height',
+                                                   value="800*1120", info='width × height',
                                                    elem_classes='aspect_ratios')
                 seed_random = gr.Checkbox(label='Random', value=True)
                 image_seed = gr.Textbox(label='Seed', value=0, max_lines=1, visible=False) 
