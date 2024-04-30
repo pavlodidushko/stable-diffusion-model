@@ -110,13 +110,16 @@ class AdvancedParams(BaseModel):
 
 class Text2ImgRequest(BaseModel):
     prompt: str = ''
+    isLongPrompt: bool = False
+    isUserInput: bool = False
+    deep_upscale: bool = False
     negative_prompt: str = default_prompt_negative
     style_selections: List[str] = default_styles
     performance_selection: PerfomanceSelection = PerfomanceSelection.speed
     aspect_ratios_selection: str = default_aspect_ratio
     image_number: int = Field(default=1, description="Image number", ge=1, le=32)
     image_seed: int = Field(default=-1, description="Seed to generate image, -1 for random")
-    sharpness: float = Field(default=2.0, ge=0.0, le=30.0)
+    sharpness: float = Field(default=6.0, ge=0.0, le=30.0)
     guidance_scale: float = Field(default=default_cfg_scale, ge=1.0, le=30.0)
     base_model_name: str = default_base_model_name
     refiner_model_name: str = default_refiner_model_name
@@ -204,10 +207,10 @@ class ImgUpscaleOrVaryRequest(Text2ImgRequest):
                 negative_prompt: str = Form(default_prompt_negative),
                 style_selections: List[str] = Form(default_styles, description="BTGen style selections, seperated by comma"),
                 performance_selection: PerfomanceSelection = Form(PerfomanceSelection.speed, description="Performance Selection, one of 'Speed','Quality','Extreme Speed'"),
-                aspect_ratios_selection: str = Form(default_aspect_ratio, description="Aspect Ratios Selection, default 800*1120"),
+                aspect_ratios_selection: str = Form(default_aspect_ratio, description="Aspect Ratios Selection, default 1000*1400"),
                 image_number: int = Form(default=1, description="Image number", ge=1, le=32),
                 image_seed: int = Form(default=-1, description="Seed to generate image, -1 for random"),
-                sharpness: float = Form(default=2.0, ge=0.0, le=30.0),
+                sharpness: float = Form(default=6.0, ge=0.0, le=30.0),
                 guidance_scale: float = Form(default=default_cfg_scale, ge=1.0, le=30.0),
                 base_model_name: str = Form(default_base_model_name, description="checkpoint file name"),
                 refiner_model_name: str = Form(default_refiner_model_name, description="refiner file name"),
@@ -252,7 +255,7 @@ class ImgInpaintOrOutpaintRequest(Text2ImgRequest):
                 negative_prompt: str = Form(default_prompt_negative),
                 style_selections: List[str] = Form(default_styles, description="BTGen style selections, seperated by comma"),
                 performance_selection: PerfomanceSelection = Form(PerfomanceSelection.speed, description="Performance Selection, one of 'Speed','Quality','Extreme Speed'"),
-                aspect_ratios_selection: str = Form(default_aspect_ratio, description="Aspect Ratios Selection, default 800*1120"),
+                aspect_ratios_selection: str = Form(default_aspect_ratio, description="Aspect Ratios Selection, default 1000*1400"),
                 image_number: int = Form(default=1, description="Image number", ge=1, le=32),
                 image_seed: int = Form(default=-1, description="Seed to generate image, -1 for random"),
                 sharpness: float = Form(default=2.0, ge=0.0, le=30.0),
@@ -385,6 +388,7 @@ class GeneratedImageResult(BaseModel):
     url: str | None = Field(description="Image file static serve url, or null if finishReasen is not 'SUCCESS'")
     seed: str = Field(description="The seed associated with this image")
     finish_reason: GenerationFinishReason
+    isUserInput: bool = False
 
 
 class DescribeImageType(str, Enum):

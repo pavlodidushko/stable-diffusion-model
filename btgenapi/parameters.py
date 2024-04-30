@@ -12,9 +12,9 @@ default_refiner_model_name = 'None'
 default_refiner_switch = 0.5
 default_loras = [['sd_xl_offset_example-lora_1.0.safetensors', 0.1]]
 default_cfg_scale = 4.0
-default_prompt_positive = ', on a full-length body , separate from image prompt selfies and irrespective of image prompt'
+default_prompt_positive = ', on a full-length body from head to toe, separate from image prompt selfies and irrespective of image prompt,  full length body from head to toe.'
 default_prompt_negative = ' Two-piece, Bikini briefs, Monokini, Tankini, Triangle bikini, Bandeau bikini,Halter-neck bikini, High-waisted bikini, naked,naked, bachelorette, underwearing, underweared, nuke, nudity, bachelor, bottomless, underwear, bikini ,  bikini ,  bikini ,  bikini ,  bikini ,  bikini , topless,underwearing, underweared,underwearing, underweared, sexy, around current clothing,'
-default_aspect_ratio = '800*1120'
+default_aspect_ratio = '1000*1400'
 default_sampler = 'dpmpp_2m_sde_gpu'
 default_scheduler = 'karras'
 
@@ -34,7 +34,7 @@ available_aspect_ratios = [
     '1024*960',
     '1088*960',
     '1088*896',
-    '800*1120',
+    '1000*1400',
     '1152*832',
     '1216*832',
     '1280*768',
@@ -78,6 +78,9 @@ class ImageGenerationResult(object):
 
 class ImageGenerationParams(object):
     def __init__(self, prompt: str,
+                 isLongPrompt: bool,
+                 isUserInput: bool,
+                 deep_upscale: bool,
                  negative_prompt: str,
                  style_selections: List[str],
                  performance_selection: str,
@@ -104,6 +107,9 @@ class ImageGenerationParams(object):
                  advanced_params: List[any] | None,
                  require_base64: bool):
         self.prompt = prompt
+        self.isLongPrompt = isLongPrompt
+        self.isUserInput = isUserInput
+        self.deep_upscale = deep_upscale
         self.negative_prompt = negative_prompt
         self.style_selections = style_selections
         self.performance_selection = performance_selection

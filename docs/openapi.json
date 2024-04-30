@@ -1527,8 +1527,8 @@
                     "aspect_ratios_selection": {
                         "type": "string",
                         "title": "Aspect Ratios Selection",
-                        "description": "Aspect Ratios Selection, default 800*1120",
-                        "default": "800*1120"
+                        "description": "Aspect Ratios Selection, default 1000*1400",
+                        "default": "1000*1400"
                     },
                     "image_number": {
                         "type": "integer",
@@ -1885,7 +1885,7 @@
                     "aspect_ratios_selection": {
                         "type": "string",
                         "title": "Aspect Ratios Selection",
-                        "default": "800*1120"
+                        "default": "1000*1400"
                     },
                     "image_number": {
                         "type": "integer",
@@ -2034,8 +2034,8 @@
                     "aspect_ratios_selection": {
                         "type": "string",
                         "title": "Aspect Ratios Selection",
-                        "description": "Aspect Ratios Selection, default 800*1120",
-                        "default": "800*1120"
+                        "description": "Aspect Ratios Selection, default 1000*1400",
+                        "default": "1000*1400"
                     },
                     "image_number": {
                         "type": "integer",
@@ -2373,7 +2373,7 @@
                     "aspect_ratios_selection": {
                         "type": "string",
                         "title": "Aspect Ratios Selection",
-                        "default": "800*1120"
+                        "default": "1000*1400"
                     },
                     "image_number": {
                         "type": "integer",
@@ -2652,7 +2652,7 @@
                     "aspect_ratios_selection": {
                         "type": "string",
                         "title": "Aspect Ratios Selection",
-                        "default": "800*1120"
+                        "default": "1000*1400"
                     },
                     "image_number": {
                         "type": "integer",
@@ -2937,7 +2937,7 @@
                     "aspect_ratios_selection": {
                         "type": "string",
                         "title": "Aspect Ratios Selection",
-                        "default": "800*1120"
+                        "default": "1000*1400"
                     },
                     "image_number": {
                         "type": "integer",
@@ -3289,7 +3289,7 @@
                     "aspect_ratios_selection": {
                         "type": "string",
                         "title": "Aspect Ratios Selection",
-                        "default": "800*1120"
+                        "default": "1000*1400"
                     },
                     "image_number": {
                         "type": "integer",
@@ -3459,7 +3459,7 @@
                     "aspect_ratios_selection": {
                         "type": "string",
                         "title": "Aspect Ratios Selection",
-                        "default": "800*1120"
+                        "default": "1000*1400"
                     },
                     "image_number": {
                         "type": "integer",

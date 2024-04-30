@@ -124,7 +124,7 @@ def image_prompt_with_inpaint(img_prompt: list, input_image: str, input_mask: st
 img_prompt = [
     {
         "cn_img": image_base64,
-        "cn_stop": 0.9,
+        "cn_stop": 1.0,
         "cn_weight": 0.75,
         "cn_type": "FaceSwap"
     }

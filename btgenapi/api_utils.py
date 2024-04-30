@@ -109,7 +109,7 @@ def req_to_params(req: Text2ImgRequest) -> ImageGenerationParams:
                 if img_prompt.cn_weight is None or img_prompt.cn_weight == 0:
                     img_prompt.cn_weight = flags.default_parameters[img_prompt.cn_type.value][1]
                 image_prompts.append(
-                    (cn_img, 0.9, 0.75, img_prompt.cn_type.value))
+                    (cn_img, 1.0, 0.75, img_prompt.cn_type.value))
                 
     advanced_params = None
     if req.advanced_params is not None:
@@ -144,6 +144,9 @@ def req_to_params(req: Text2ImgRequest) -> ImageGenerationParams:
         ]
 
     return ImageGenerationParams(prompt=prompt,
+                                 isLongPrompt=req.isLongPrompt,
+                                 isUserInput=req.isUserInput,
+                                 deep_upscale=req.deep_upscale,
                                  negative_prompt=negative_prompt,
                                  style_selections=style_selections,
                                  performance_selection=performance_selection,

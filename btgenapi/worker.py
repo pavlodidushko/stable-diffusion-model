@@ -10,6 +10,7 @@ from typing import List
 from btgenapi.file_utils import save_output_file
 from btgenapi.parameters import GenerationFinishReason, ImageGenerationResult, default_prompt_positive, default_prompt_negative
 from btgenapi.task_queue import QueueTask, TaskQueue, TaskOutputs
+import cv2
 
 worker_queue: TaskQueue = None
 
@@ -125,7 +126,10 @@ def process_generate(async_task: QueueTask):
         params = async_task.req_param
         # req.prompt = "woman below with various,  suitable elegant color and style of clothes for " + req.prompt + default_prompt_positive
 
-        prompt = "woman in image prompts with various,  suitable elegant color and style of clothes for " + params.prompt + default_prompt_positive
+        print("----------------------------------------------", params.isLongPrompt)
+        prompt = params.prompt
+        if params.isLongPrompt == False:
+            prompt = "woman in image prompts with various,  suitable elegant color and style of clothes and shoes for " + params.prompt + default_prompt_positive
         negative_prompt = ' Two-piece, Bikini briefs, Monokini, Tankini, Triangle bikini, Bandeau bikini,Halter-neck bikini, High-waisted bikini, naked,naked, bachelorette, underwearing, underweared, nuke, nudity, bachelor, bottomless, underwear, bikini ,  bikini ,  bikini ,  bikini ,  bikini ,  bikini , topless,underwearing, underweared,underwearing, underweared, sexy, around current clothing,'
         style_selections = params.style_selections
 
@@ -151,6 +155,7 @@ def process_generate(async_task: QueueTask):
         outpaint_distance_bottom = params.outpaint_distance_bottom
         inpaint_input_image = params.inpaint_input_image
         inpaint_additional_prompt = params.inpaint_additional_prompt
+        deep_upscale = params.deep_upscale
         inpaint_mask_image_upload = None
 
         if inpaint_additional_prompt is None:
@@ -161,6 +166,7 @@ def process_generate(async_task: QueueTask):
         cn_tasks = {x: [] for x in flags.ip_list}
         for img_prompt in params.image_prompts:
             cn_img, cn_stop, cn_weight, cn_type = img_prompt
+            
             cn_tasks[cn_type].append([cn_img, cn_stop, cn_weight])
 
         advanced_parameters.set_all_advanced_parameters(*params.advanced_params)
@@ -196,10 +202,10 @@ def process_generate(async_task: QueueTask):
 
         assert performance_selection in ['Speed', 'Quality', 'Extreme Speed']
 
-        steps = 30
+        steps = 40
 
         if performance_selection == 'Speed':
-            steps = 30
+            steps = 40
 
         if performance_selection == 'Quality':
             steps = 60
@@ -823,36 +829,10 @@ def process_generate(async_task: QueueTask):
 
                 if inpaint_worker.current_task is not None:
                     imgs = [inpaint_worker.current_task.post_process(x) for x in imgs]
-
-                for x in imgs:
-                    d = [
-                        ('Prompt', task['log_positive_prompt']),
-                        ('Negative Prompt', task['log_negative_prompt']),
-                        ('Fooocus V2 Expansion', task['expansion']),
-                        ('Styles', str(raw_style_selections)),
-                        ('Performance', performance_selection),
-                        ('Resolution', str((width, height))),
-                        ('Sharpness', sharpness),
-                        ('Guidance Scale', guidance_scale),
-                        ('ADM Guidance', str((
-                            patch.positive_adm_scale,
-                            patch.negative_adm_scale,
-                            patch.adm_scaler_end))),
-                        ('Base Model', base_model_name),
-                        ('Refiner Model', refiner_model_name),
-                        ('Refiner Switch', refiner_switch),
-                        ('Sampler', sampler_name),
-                        ('Scheduler', scheduler_name),
-                        ('Seed', task['task_seed']),
-                    ]
-                    for n, w in loras:
-                        if n != 'None':
-                            d.append((f'LoRA', f'{n} : {w}'))
-                    d.append(('Version', 'v0.0.1'))
-                    log(x, d)
-                
-                # Fooocus async_worker.py code end
-                
+                for index, x in enumerate(imgs):
+                    if deep_upscale:
+                        tmp = perform_upscale(x)
+                        imgs[index] = tmp
                 results += imgs
             except model_management.InterruptProcessingException as e:
                 print("User stopped")

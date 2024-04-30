@@ -27,24 +27,28 @@ class SimpleText2ImgRequestWithPrompt(BaseModel):
     image_number: int = 10
     image_prompts: List[str] = []
     token: str = ''
+    deep_upscale: bool = False
+    isUserInput: bool = False
+
+class LongText2ImgRequestWithPrompt(BaseModel):
+    longPrompt: str = ''
+    image_number: int = 10
+    image_prompts: List[str] = []
+    token: str = ''
+    deep_upscale: bool = False
+    isUserInput: bool = False
+
 
     
 
 class Text2ImgRequestWithPrompt(Text2ImgRequest):
     image_prompts: List[ImagePromptJson] = []
+    isLongPrompt: bool = False
 
 
 class Text2ImgRequestWithPromptMulti(SimpleText2ImgRequestWithPrompt):
-    text_prompts: List[str] = [  "summer",
-  "spring",
-  "cocktail_party",
-  "date_night",
-  "vacation",
-  "bachelorette_weekend",
-  "formal_wedding",
-  "semi_formal_wedding",
-  "destination_wedding",
-  "garden_party_wedding",]
+    text_prompts: List[str] = [ ]
+    env: str = "STAGING"
 
 class ImgUpscaleOrVaryRequestJson(Text2ImgRequest):
     uov_method: UpscaleOrVaryMethod = "Upscale (2x)"

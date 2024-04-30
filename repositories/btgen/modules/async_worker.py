@@ -590,6 +590,7 @@ def worker():
                     imgs = [inpaint_worker.current_task.post_process(x) for x in imgs]
 
                 for x in imgs:
+                    
                     d = [
                         ('Prompt', task['log_positive_prompt']),
                         ('Negative Prompt', task['log_negative_prompt']),

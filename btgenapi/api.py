@@ -143,6 +143,28 @@ def text_to_img_with_ip(rawreq: SimpleText2ImgRequestWithPrompt,
         img_prompt.cn_img = base64_to_stream(raw_img_prompt)
         image_prompts_files.append(img_prompt)
 
+
+
+
+@secure_router.post("/v2/generation/long-text-to-image-with-ip", response_model=List[GeneratedImageResult] | AsyncJobResponse, responses=img_generate_responses)
+def long_text_to_img_with_ip(rawreq: LongText2ImgRequestWithPrompt,
+                        accept: str = Header(None),
+                        accept_query: str | None = Query(None, alias='accept', description="Parameter to overvide 'Accept' header, 'image/png' for output bytes")):
+    if accept_query is not None and len(accept_query) > 0:
+        accept = accept_query
+    req = Text2ImgRequestWithPrompt()
+    req.image_number = rawreq.image_number
+    req.prompt = rawreq.longPrompt
+    req.isLongPrompt = True
+    req.deep_upscale = rawreq.deep_upscale
+    req.image_prompts = rawreq.image_prompts
+    default_image_promt = ImagePrompt(cn_img=None)
+    image_prompts_files: List[ImagePrompt] = []
+    for raw_img_prompt in rawreq.image_prompts:
+        img_prompt = ImagePrompt(cn_img=None)
+        img_prompt.cn_img = base64_to_stream(raw_img_prompt)
+        image_prompts_files.append(img_prompt)
+
     # while len(image_prompts_files) <= 4:
     #     image_prompts_files.append(default_image_promt)
 
@@ -157,6 +179,7 @@ def generate_work(rawreq: SimpleText2ImgRequestWithPrompt):
     req.image_number = rawreq.image_number
     req.prompt = rawreq.prompt
     req.image_prompts = rawreq.image_prompts
+    req.deep_upscale = rawreq.deep_upscale
     default_image_promt = ImagePrompt(cn_img=None)
     image_prompts_files: List[ImagePrompt] = []
     for raw_img_prompt in rawreq.image_prompts:
@@ -170,6 +193,12 @@ def generate_work(rawreq: SimpleText2ImgRequestWithPrompt):
     req.image_prompts = image_prompts_files
 
     result = call_worker(req, "application/json")
+    try:
+        for item in result:
+                item.isUserInput = rawreq.isUserInput        
+    except Exception as e:
+        print(e)
+    
     return result
 
 
@@ -184,6 +213,7 @@ def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
     result = []
     callback_payload_images = []
     for text_prompt in req.text_prompts:
+     
         req.prompt = text_prompt
         tmp = generate_work(req)
         for item_result in tmp:
@@ -212,8 +242,13 @@ def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
             "Cookie": "jgb_cs=s%3A96Q5_rfHS3EaRCEV6iKlsX7u_zm4naZD.yKB%2BJ35mmaGGryviAAagXeCrvkyAC9K4rCLjc4Xzd8c"
         }
 
-        # Define the GraphQL API endpoint
+        # Define the GraphQL API endpoint for staging
+
         url = "https://stage-graphql.beautifultechnologies.app/"
+        if req.env == "PROD": 
+            url = "https://graphql.beautifultechnologies.app/"
+        #Define the GraphQL API endpoint for production
+        # url = "https://graphql.beautifultechnologies.app/"
 
         # Send the HTTP request using the `requests` library
         response = requests.post(url, json=graphql_request, headers=headers)
