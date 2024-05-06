@@ -441,7 +441,7 @@ def process_generate(async_task: QueueTask):
 
                 positive_basic_workloads = remove_empty_str(positive_basic_workloads, default=task_prompt)
                 negative_basic_workloads = remove_empty_str(negative_basic_workloads, default=task_negative_prompt)
-
+                print("*************************", task_prompt)
                 tasks.append(dict(
                     task_seed=task_seed,
                     task_prompt=task_prompt,
@@ -833,6 +833,33 @@ def process_generate(async_task: QueueTask):
                     if deep_upscale:
                         tmp = perform_upscale(x)
                         imgs[index] = tmp
+                    d = [
+                        ('Prompt', task['log_positive_prompt']),
+                        ('Negative Prompt', task['log_negative_prompt']),
+                        ('Fooocus V2 Expansion', task['expansion']),
+                        ('Styles', str(raw_style_selections)),
+                        ('Performance', performance_selection),
+                        ('Resolution', str((width, height))),
+                        ('Sharpness', sharpness),
+                        ('Guidance Scale', guidance_scale),
+                        ('ADM Guidance', str((
+                            patch.positive_adm_scale,
+                            patch.negative_adm_scale,
+                            patch.adm_scaler_end))),
+                        ('Base Model', base_model_name),
+                        ('Refiner Model', refiner_model_name),
+                        ('Refiner Switch', refiner_switch),
+                        ('Sampler', sampler_name),
+                        ('Scheduler', scheduler_name),
+                        ('Seed', task['task_seed']),
+                    ]
+                    for n, w in loras:
+                        if n != 'None':
+                            d.append((f'LoRA', f'{n} : {w}'))
+                    d.append(('Version', 'v0.0.1'))
+                    log(x, d)
+
+
                 results += imgs
             except model_management.InterruptProcessingException as e:
                 print("User stopped")
