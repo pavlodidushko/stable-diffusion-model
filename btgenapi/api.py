@@ -193,12 +193,7 @@ def generate_work(rawreq: SimpleText2ImgRequestWithPrompt):
     req.image_prompts = image_prompts_files
 
     result = call_worker(req, "application/json")
-    try:
-        for item in result:
-                item.isUserInput = rawreq.isUserInput        
-    except Exception as e:
-        print(e)
-    
+
     return result
 
 
@@ -229,7 +224,9 @@ def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
             "query": "mutation UpdateImagesGeneration($data: ImageGenerationInput!) { updateImagesGeneration(data: $data) { status }}",
             "variables": {
                 "data": {
-                    "images":callback_payload_images
+                    "images":callback_payload_images,
+                    "isUserInput": req.isUserInput
+
                 }
             }
         }
@@ -254,8 +251,6 @@ def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
         response = requests.post(url, json=graphql_request, headers=headers)
 
         # Print the response content and status code
-        print(response.content)
-        print(response.status_code)
     except Exception as e:
 
         print(e)

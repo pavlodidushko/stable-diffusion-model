@@ -260,7 +260,7 @@ def prepare_environments(args) -> bool:
     parameters.default_loras = config.default_loras
     parameters.default_cfg_scale = config.default_cfg_scale
     parameters.default_prompt_negative = config.default_prompt_negative
-    parameters.default_aspect_ratio = "1000*1400"
+    parameters.default_aspect_ratio = "700*980"
     parameters.available_aspect_ratios = [parameters.get_aspect_ratio_value(a) for a in config.available_aspect_ratios]
 
     # download_models()

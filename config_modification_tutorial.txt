@@ -75,7 +75,7 @@ Remember to split the paths with "\\" rather than "\", and there is no "," befor
         "1088*960",
         "1088*896",
         "1152*896",
-        "1000*1400",
+        "700*980",
         "1152*832",
         "1216*832",
         "1280*768",
@@ -88,7 +88,7 @@ Remember to split the paths with "\\" rather than "\", and there is no "," befor
         "1664*576",
         "1728*576"
     ],
-    "default_aspect_ratio": "1000*1400",
+    "default_aspect_ratio": "700*980",
     "default_inpaint_engine_version": "v2.6",
     "default_cfg_tsnr": 7.0,
     "default_overwrite_step": -1,
