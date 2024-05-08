@@ -240,7 +240,8 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
                 "query": "mutation UpdateImagesGeneration($data: ImageGenerationInput!) { updateImagesGeneration(data: $data) { status }}",
                 "variables": {
                     "data": {
-                        "images":callback_payload_images
+                        "images":callback_payload_images,
+                        "isUserInput": req.isUserInput
                     }
                 }
             }
