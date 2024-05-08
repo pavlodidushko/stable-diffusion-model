@@ -15,10 +15,11 @@ from btgenapi.worker import worker_queue, process_top, blocking_get_task_result
 from btgenapi.models_v2 import *
 from btgenapi.img_utils import base64_to_stream, read_input_image
 import requests
-
+from asyncio import Lock
 from modules.util import HWC3
-
+from btgenapi.remote_utils import get_public_ip
 app = FastAPI()
+lock = Lock()
 
 app.add_middleware(
     CORSMiddleware,
@@ -31,7 +32,7 @@ app.add_middleware(
 secure_router = APIRouter(
     dependencies=[Depends(api_key_auth)]
 )
-vps_ip = "204.12.253.115"
+vps_ip = get_public_ip()
 
 img_generate_responses = {
     "200": {
@@ -170,7 +171,15 @@ def long_text_to_img_with_ip(rawreq: LongText2ImgRequestWithPrompt,
 
     req.image_prompts = image_prompts_files
 
-    result = call_worker(req, "application/json")
+    result = []
+    tmp = call_worker(req, "application/json")
+
+    for item_result in tmp:
+        result_url = item_result.url
+        remote_url = result_url.replace("127.0.0.1", vps_ip)
+        item_result.url = remote_url
+        result.append(item_result)
+
     return result
 
 
@@ -196,66 +205,73 @@ def generate_work(rawreq: SimpleText2ImgRequestWithPrompt):
 
     return result
 
+# def text_to_img_with_up_proc(req: Text2ImgRequestWithPromptMulti,
+#                         accept: str = Header(None),
+#                         accept_query: str | None = Query(None, alias='accept', description="Parameter to overvide 'Accept' header, 'image/png' for output bytes")):
+                            
 
 @secure_router.post("/v2/generation/text-to-image-with-ip-multi", response_model=List[GeneratedImageResult] | AsyncJobResponse, responses=img_generate_responses)
-def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
+async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
                         accept: str = Header(None),
                         accept_query: str | None = Query(None, alias='accept', description="Parameter to overvide 'Accept' header, 'image/png' for output bytes")):
-    gToken = req.token
-  
-    if accept_query is not None and len(accept_query) > 0:
-        accept = accept_query
-    result = []
-    callback_payload_images = []
-    for text_prompt in req.text_prompts:
-     
-        req.prompt = text_prompt
-        tmp = generate_work(req)
-        for item_result in tmp:
-            result.append(item_result)
-            result_url = item_result.url
-            remote_url = result_url.replace("127.0.0.1", vps_ip)
-            item_result.url = remote_url
-            callback_payload_images.append({"url": remote_url, "prompt": text_prompt})
 
-    try:
-        # Define the GraphQL query and variables as a dictionary
-        graphql_request = {
-            "query": "mutation UpdateImagesGeneration($data: ImageGenerationInput!) { updateImagesGeneration(data: $data) { status }}",
-            "variables": {
-                "data": {
-                    "images":callback_payload_images,
-                    "isUserInput": req.isUserInput
+    async with lock:
+        print(" -------------------------------------------- text-to-image-with-ip-multi -----------------")
+        gToken = req.token
 
+        if accept_query is not None and len(accept_query) > 0:
+            accept = accept_query
+        result = []
+        callback_payload_images = []
+        for text_prompt in req.text_prompts:
+        
+            req.prompt = text_prompt
+            tmp = generate_work(req)
+            for item_result in tmp:
+                result.append(item_result)
+                result_url = item_result.url
+                remote_url = result_url.replace("127.0.0.1", vps_ip)
+                item_result.url = remote_url
+                callback_payload_images.append({"url": remote_url, "prompt": text_prompt})
+
+        try:
+            # Define the GraphQL query and variables as a dictionary
+            graphql_request = {
+                "query": "mutation UpdateImagesGeneration($data: ImageGenerationInput!) { updateImagesGeneration(data: $data) { status }}",
+                "variables": {
+                    "data": {
+                        "images":callback_payload_images
+                    }
                 }
             }
-        }
 
-        # Define the headers
-        headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": "Bearer " + gToken,
-            "Cookie": "jgb_cs=s%3A96Q5_rfHS3EaRCEV6iKlsX7u_zm4naZD.yKB%2BJ35mmaGGryviAAagXeCrvkyAC9K4rCLjc4Xzd8c"
-        }
+            # Define the headers
+            headers = {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": "Bearer " + gToken,
+                "Cookie": "jgb_cs=s%3A96Q5_rfHS3EaRCEV6iKlsX7u_zm4naZD.yKB%2BJ35mmaGGryviAAagXeCrvkyAC9K4rCLjc4Xzd8c"
+            }
 
-        # Define the GraphQL API endpoint for staging
+            # Define the GraphQL API endpoint for staging
 
-        url = "https://stage-graphql.beautifultechnologies.app/"
-        if req.env == "PROD": 
-            url = "https://graphql.beautifultechnologies.app/"
-        #Define the GraphQL API endpoint for production
-        # url = "https://graphql.beautifultechnologies.app/"
+            url = "https://stage-graphql.beautifultechnologies.app/"
+            if req.env == "PROD": 
+                url = "https://graphql.beautifultechnologies.app/"
+            #Define the GraphQL API endpoint for production
+            # url = "https://graphql.beautifultechnologies.app/"
 
-        # Send the HTTP request using the `requests` library
-        response = requests.post(url, json=graphql_request, headers=headers)
+            # Send the HTTP request using the `requests` library
+            response = requests.post(url, json=graphql_request, headers=headers)
 
-        # Print the response content and status code
-    except Exception as e:
+            # Print the response content and status code
+            print(response.content)
+            print(response.status_code)
+        except Exception as e:
 
-        print(e)
+            print(e)
 
-    return result
+        return result
 
 
 app.mount("/files", StaticFiles(directory=file_utils.output_dir), name="files")
