@@ -202,12 +202,7 @@ def generate_work(rawreq: SimpleText2ImgRequestWithPrompt):
     req.image_prompts = image_prompts_files
 
     result = call_worker(req, "application/json")
-    try:
-        for item in result:
-                item.isUserInput = rawreq.isUserInput        
-    except Exception as e:
-        print(e)
-    
+
     return result
 
 # def text_to_img_with_up_proc(req: Text2ImgRequestWithPromptMulti,

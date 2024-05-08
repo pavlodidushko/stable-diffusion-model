@@ -14,7 +14,7 @@ default_loras = [['sd_xl_offset_example-lora_1.0.safetensors', 0.1]]
 default_cfg_scale = 4.0
 default_prompt_positive = ', on a full-length body from head to toe, separate from image prompt selfies and irrespective of image prompt,  full length body from head to toe.'
 default_prompt_negative = ' Two-piece, Bikini briefs, Monokini, Tankini, Triangle bikini, Bandeau bikini,Halter-neck bikini, High-waisted bikini, naked,naked, bachelorette, underwearing, underweared, nuke, nudity, bachelor, bottomless, underwear, bikini ,  bikini ,  bikini ,  bikini ,  bikini ,  bikini , topless,underwearing, underweared,underwearing, underweared, sexy, around current clothing,'
-default_aspect_ratio = '1000*1400'
+default_aspect_ratio = '700*980'
 default_sampler = 'dpmpp_2m_sde_gpu'
 default_scheduler = 'karras'
 
@@ -34,7 +34,7 @@ available_aspect_ratios = [
     '1024*960',
     '1088*960',
     '1088*896',
-    '1000*1400',
+    '700*980',
     '1152*832',
     '1216*832',
     '1280*768',
