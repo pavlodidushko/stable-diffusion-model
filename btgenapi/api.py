@@ -15,11 +15,12 @@ from btgenapi.worker import worker_queue, process_top, blocking_get_task_result
 from btgenapi.models_v2 import *
 from btgenapi.img_utils import base64_to_stream, read_input_image
 import requests
-from asyncio import Lock
+from asyncio import Lock, Semaphore
+
 from modules.util import HWC3
 from btgenapi.remote_utils import get_public_ip
 app = FastAPI()
-lock = Lock()
+semaphore = Semaphore(1)
 
 app.add_middleware(
     CORSMiddleware,
@@ -176,7 +177,7 @@ def long_text_to_img_with_ip(rawreq: LongText2ImgRequestWithPrompt,
 
     for item_result in tmp:
         result_url = item_result.url
-        remote_url = result_url.replace("127.0.0.1", vps_ip)
+        remote_url = result_url.replace("127.0.0.1:8888", vps_ip + ":9999")
         item_result.url = remote_url
         result.append(item_result)
 
@@ -208,6 +209,7 @@ def generate_work(rawreq: SimpleText2ImgRequestWithPrompt):
 # def text_to_img_with_up_proc(req: Text2ImgRequestWithPromptMulti,
 #                         accept: str = Header(None),
 #                         accept_query: str | None = Query(None, alias='accept', description="Parameter to overvide 'Accept' header, 'image/png' for output bytes")):
+app.mount("/files", StaticFiles(directory=file_utils.output_dir), name="files")
                             
 
 @secure_router.post("/v2/generation/text-to-image-with-ip-multi", response_model=List[GeneratedImageResult] | AsyncJobResponse, responses=img_generate_responses)
@@ -215,6 +217,7 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
                         accept: str = Header(None),
                         accept_query: str | None = Query(None, alias='accept', description="Parameter to overvide 'Accept' header, 'image/png' for output bytes")):
 
+    lock = Lock()
     async with lock:
         print(" -------------------------------------------- text-to-image-with-ip-multi -----------------")
         gToken = req.token
@@ -230,7 +233,7 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
             for item_result in tmp:
                 result.append(item_result)
                 result_url = item_result.url
-                remote_url = result_url.replace("127.0.0.1", vps_ip)
+                remote_url = result_url.replace("127.0.0.1:8888", vps_ip + ":9999")
                 item_result.url = remote_url
                 callback_payload_images.append({"url": remote_url, "prompt": text_prompt})
 
@@ -274,7 +277,6 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
         return result
 
 
-app.mount("/files", StaticFiles(directory=file_utils.output_dir), name="files")
 
 app.include_router(secure_router)
 
