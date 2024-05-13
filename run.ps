@@ -1,0 +1,42 @@
+
+# Define the directory where you want to create output folders
+$OutPutPath = "C:\AI\BTGen_win64_2-1-831\BTGen\outputs"
+
+# Define the  first port number to start the folder increment
+$startPortNumber = 7865
+
+# Define the number of GPUs you want to create folders for
+$numberOfGPUs = 4  # Change this number to the desired count
+ # Define first GPU ids
+$GPU_ID =  0
+# Loop to create folders and launch BTGen
+for ($i = $startPortNumber ; $i -lt ($startPortNumber + $numberOfGPUs); $i++) {
+    # Format the folder name with leading zeros
+    $folderName = "{0:D4}" -f $i 
+
+    # Create the folder if it doesn't exist
+    $folderPath = Join-Path -Path $OutPutPath -ChildPath $folderName
+    if (!(Test-Path -Path $folderPath -PathType Container)) {
+        New-Item -ItemType Directory -Path $folderPath -Force
+        Write-Host "Created folder: $folderPath"
+
+
+    } else {
+        Write-Host "Folder already exists: $folderPath"
+    }
+
+
+
+$port = $folderName 
+$Title = "Foocus| GPU#:$GPU_ID | Port:$port | ImagePath: $folderPath"
+
+
+#$Host.UI.RawUI.WindowTitle = $Title
+
+#start a new instance for each GPU, listening on  separate ports
+Start-Process PowerShell  "-c  write-host '$title' -foregroundColor Yellow;.\python_embeded\python.exe -s BTGen\entry_with_update.py --listen --port $port --gpu-device-id $GPU_ID  --output-path $folderPath"
+$GPU_ID++
+
+}
+
+

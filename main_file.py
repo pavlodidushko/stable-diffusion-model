@@ -10,10 +10,7 @@ from threading import Thread
 from btgen_api_version import version
 from btgenapi.repositories_versions import btgen_commit_hash
 
-
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-
-
 
 os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
 os.environ["PYTORCH_MPS_HIGH_WATERMARK_RATIO"] = "0.0"
@@ -31,12 +28,8 @@ modules_path = os.path.dirname(os.path.realpath(__file__))
 script_path = modules_path
 dir_repos = "repositories"
 
-
-
-
 if __name__ == "__main__":
 
-    
     from btgenapi.file_serve import start_file_serve
 
     start_file_serve()
