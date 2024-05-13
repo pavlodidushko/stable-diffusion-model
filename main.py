@@ -286,7 +286,7 @@ def pre_setup(skip_sync_repo: bool = False,
               preset: str | None = None):
     class Args(object):
         host = '127.0.0.1'
-        port = 8888
+        port = 8887
         base_url = None
         sync_repo = None
         disable_image_log = False

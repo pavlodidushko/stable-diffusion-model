@@ -175,7 +175,7 @@ def long_text_to_img_with_ip(rawreq: LongText2ImgRequestWithPrompt,
 
     for item_result in tmp:
         result_url = item_result.url
-        remote_url = result_url.replace("127.0.0.1:8888", vps_ip + ":9999")
+        remote_url = result_url.replace("127.0.0.1:8887", vps_ip + ":9999")
         item_result.url = remote_url
         callback_payload_images.append({"url": remote_url, "prompt": rawreq.longPrompt})
         result.append(item_result)
@@ -265,10 +265,9 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
             for item_result in tmp:
                 result.append(item_result)
                 result_url = item_result.url
-                remote_url = result_url.replace("127.0.0.1:8888", vps_ip + ":9999")
+                remote_url = result_url.replace("127.0.0.1:8887", vps_ip + ":9999")
                 item_result.url = remote_url
                 callback_payload_images.append({"url": remote_url, "prompt": text_prompt})
-
         try:
             # Define the GraphQL query and variables as a dictionary
             graphql_request = {
