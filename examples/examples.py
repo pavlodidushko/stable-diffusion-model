@@ -7,7 +7,7 @@ inpaint_engine = 'v1'
 
 
 class Config():
-    fooocus_host = 'http://127.0.0.1:8888'
+    fooocus_host = 'http://127.0.0.1:8887'
 
     text2img = '/v1/generation/text-to-image'
     img_upscale = '/v2/generation/image-upscale-vary'
