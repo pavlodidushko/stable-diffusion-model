@@ -124,9 +124,7 @@ def process_generate(async_task: QueueTask):
 
         # Transform parameters
         params = async_task.req_param
-        # req.prompt = "woman below with various,  suitable elegant color and style of clothes for " + req.prompt + default_prompt_positive
 
-        print("----------------------------------------------", params.isLongPrompt)
         prompt = params.prompt
         style_selections = params.style_selections
 
