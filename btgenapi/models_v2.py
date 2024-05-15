@@ -37,7 +37,7 @@ class LongText2ImgRequestWithPrompt(BaseModel):
     token: str = ''
     deep_upscale: bool = False
     isUserInput: bool = False
-
+    env: str = ''
 
     
 
