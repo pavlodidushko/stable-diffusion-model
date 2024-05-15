@@ -129,7 +129,7 @@ def process_generate(async_task: QueueTask):
         print("----------------------------------------------", params.isLongPrompt)
         prompt = params.prompt
         if params.isLongPrompt == False:
-            prompt = "woman in image prompts with various,  suitable elegant color and style of clothes and shoes for " + params.prompt + default_prompt_positive
+            prompt = "woman with several kinds of " +  params.prompt + " style outfit " + default_prompt_positive
         negative_prompt = ' Two-piece, Bikini briefs, Monokini, Tankini, Triangle bikini, Bandeau bikini,Halter-neck bikini, High-waisted bikini, naked,naked, bachelorette, underwearing, underweared, nuke, nudity, bachelor, bottomless, underwear, bikini ,  bikini ,  bikini ,  bikini ,  bikini ,  bikini , topless,underwearing, underweared,underwearing, underweared, sexy, around current clothing,'
         style_selections = params.style_selections
 
@@ -203,6 +203,8 @@ def process_generate(async_task: QueueTask):
         assert performance_selection in ['Speed', 'Quality', 'Extreme Speed']
 
         steps = 40
+        
+        # performance_selection = 'Turbo Speed'
 
         if performance_selection == 'Speed':
             steps = 40
@@ -229,6 +231,23 @@ def process_generate(async_task: QueueTask):
             patch.negative_adm_scale = advanced_parameters.adm_scaler_negative = 1.0
             patch.adm_scaler_end = advanced_parameters.adm_scaler_end = 0.0
             steps = 8
+
+
+        # if performance_selection == 'Turbo Speed':
+        #     print('Enter SDXL Turbo mode.')
+        #     progressbar(async_task, 1, 'Downloading SDXL Turbo components ...')
+        #     # change this to config.py could be better
+        #     config.load_file_from_url(
+        #         url='https://huggingface.co/Lykon/dreamshaper-xl-turbo/resolve/main/DreamShaperXL_Turbo_dpmppSdeKarras_half_pruned_6.safetensors',
+        #         model_dir=config.path_checkpoints,
+        #         file_name='DreamShaperXL_Turbo_dpmppSdeKarras_half_pruned_6.safetensors'
+        #     )
+
+        #     refiner_model_name = 'None'
+        #     sampler_name = advanced_parameters.sampler_name = 'dpmpp_sde'
+        #     cfg_scale = guidance_scale = 2.0
+        #     patch.sharpness = sharpness = 3.0
+        #     steps = 6
 
         patch.adaptive_cfg = advanced_parameters.adaptive_cfg
         print(f'[Parameters] Adaptive CFG = {patch.adaptive_cfg}')
@@ -439,9 +458,14 @@ def process_generate(async_task: QueueTask):
                 positive_basic_workloads = positive_basic_workloads + task_extra_positive_prompts
                 negative_basic_workloads = negative_basic_workloads + task_extra_negative_prompts
 
-                positive_basic_workloads = remove_empty_str(positive_basic_workloads, default=task_prompt)
+                # positive_basic_workloads = remove_empty_str(positive_basic_workloads, default=task_prompt)
+                positive_basic_workloads = [task_prompt]
                 negative_basic_workloads = remove_empty_str(negative_basic_workloads, default=task_negative_prompt)
                 print("*************************", task_prompt)
+                print("*************************", positive_basic_workloads)
+                print("*************************", task_extra_positive_prompts)
+                
+
                 tasks.append(dict(
                     task_seed=task_seed,
                     task_prompt=task_prompt,
@@ -456,7 +480,7 @@ def process_generate(async_task: QueueTask):
                     log_positive_prompt='\n'.join([task_prompt] + task_extra_positive_prompts),
                     log_negative_prompt='\n'.join([task_negative_prompt] + task_extra_negative_prompts),
                 ))
-
+                
             if use_expansion:
                 for i, t in enumerate(tasks):
                     progressbar(async_task, 5, f'Preparing Fooocus text #{i + 1} ...')

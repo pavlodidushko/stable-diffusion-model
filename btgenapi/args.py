@@ -7,7 +7,7 @@ from args_manager import args_parser
 
 # Override the port default value
 args_parser.parser.set_defaults(
-    port=8888
+    port=8887
 )
 
 # Execute args parse again
