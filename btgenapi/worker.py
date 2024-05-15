@@ -232,23 +232,6 @@ def process_generate(async_task: QueueTask):
             patch.adm_scaler_end = advanced_parameters.adm_scaler_end = 0.0
             steps = 8
 
-
-        # if performance_selection == 'Turbo Speed':
-        #     print('Enter SDXL Turbo mode.')
-        #     progressbar(async_task, 1, 'Downloading SDXL Turbo components ...')
-        #     # change this to config.py could be better
-        #     config.load_file_from_url(
-        #         url='https://huggingface.co/Lykon/dreamshaper-xl-turbo/resolve/main/DreamShaperXL_Turbo_dpmppSdeKarras_half_pruned_6.safetensors',
-        #         model_dir=config.path_checkpoints,
-        #         file_name='DreamShaperXL_Turbo_dpmppSdeKarras_half_pruned_6.safetensors'
-        #     )
-
-        #     refiner_model_name = 'None'
-        #     sampler_name = advanced_parameters.sampler_name = 'dpmpp_sde'
-        #     cfg_scale = guidance_scale = 2.0
-        #     patch.sharpness = sharpness = 3.0
-        #     steps = 6
-
         patch.adaptive_cfg = advanced_parameters.adaptive_cfg
         print(f'[Parameters] Adaptive CFG = {patch.adaptive_cfg}')
 
