@@ -10,7 +10,7 @@ output_dir = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', 'outputs', 'files'))
 os.makedirs(output_dir, exist_ok=True)
 
-static_serve_base_url = 'http://127.0.0.1:8888/files/'
+static_serve_base_url = 'http://127.0.0.1:8887/files/'
 
 
 def save_output_file(img: np.ndarray) -> str:
