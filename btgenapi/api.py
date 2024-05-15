@@ -149,6 +149,7 @@ def text_to_img_with_ip(rawreq: SimpleText2ImgRequestWithPrompt,
 def long_text_to_img_with_ip(rawreq: LongText2ImgRequestWithPrompt,
                         accept: str = Header(None),
                         accept_query: str | None = Query(None, alias='accept', description="Parameter to overvide 'Accept' header, 'image/png' for output bytes")):
+    
     gToken = rawreq.token
     if accept_query is not None and len(accept_query) > 0:
         accept = accept_query
@@ -169,7 +170,7 @@ def long_text_to_img_with_ip(rawreq: LongText2ImgRequestWithPrompt,
 
     result = []
     tmp = call_worker(req, "application/json")
-
+    print("---- call worker finished ----", tmp)
 
     callback_payload_images = []
 
@@ -180,6 +181,7 @@ def long_text_to_img_with_ip(rawreq: LongText2ImgRequestWithPrompt,
         callback_payload_images.append({"url": remote_url, "prompt": rawreq.longPrompt})
         result.append(item_result)
 
+    print(" --------- post processing the urls -----------" , result)
     try:
         # Define the GraphQL query and variables as a dictionary
         graphql_request = {
@@ -203,16 +205,22 @@ def long_text_to_img_with_ip(rawreq: LongText2ImgRequestWithPrompt,
         # Define the GraphQL API endpoint for staging
 
         url = "https://stage-graphql.beautifultechnologies.app/"
-        if req.env == "PROD": 
+        if rawreq.env == "PROD": 
             url = "https://graphql.beautifultechnologies.app/"
         #Define the GraphQL API endpoint for production
         # url = "https://graphql.beautifultechnologies.app/"
 
         # Send the HTTP request using the `requests` library
+        print("before request")
+        print(url)
         requests.post(url, json=graphql_request, headers=headers)
+
+        print("after request")
     except Exception as e:
         print(e)
-
+    print(" --------------- return result ----------")
+    print(result)
+    print ( "----------------" )
     return result
 
 
@@ -289,7 +297,8 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
             }
 
             # Define the GraphQL API endpoint for staging
-
+            print(" ------------------ before request to graphql -----------")
+            print(url)
             url = "https://stage-graphql.beautifultechnologies.app/"
             if req.env == "PROD": 
                 url = "https://graphql.beautifultechnologies.app/"
@@ -298,6 +307,7 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
 
             # Send the HTTP request using the `requests` library
             response = requests.post(url, json=graphql_request, headers=headers)
+            print(" ------------------ after request to graphql -----------")
 
             # Print the response content and status code
             print(response.content)

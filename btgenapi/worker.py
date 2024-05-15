@@ -128,9 +128,6 @@ def process_generate(async_task: QueueTask):
 
         print("----------------------------------------------", params.isLongPrompt)
         prompt = params.prompt
-        if params.isLongPrompt == False:
-            prompt = "woman with several kinds of " +  params.prompt + " style outfit " + default_prompt_positive
-        negative_prompt = ' Two-piece, Bikini briefs, Monokini, Tankini, Triangle bikini, Bandeau bikini,Halter-neck bikini, High-waisted bikini, naked,naked, bachelorette, underwearing, underweared, nuke, nudity, bachelor, bottomless, underwear, bikini ,  bikini ,  bikini ,  bikini ,  bikini ,  bikini , topless,underwearing, underweared,underwearing, underweared, sexy, around current clothing,'
         style_selections = params.style_selections
 
         performance_selection = params.performance_selection
@@ -157,6 +154,7 @@ def process_generate(async_task: QueueTask):
         inpaint_additional_prompt = params.inpaint_additional_prompt
         deep_upscale = params.deep_upscale
         inpaint_mask_image_upload = None
+        negative_prompt = ' Two-piece, Bikini briefs, Monokini, Tankini, Triangle bikini, Bandeau bikini,Halter-neck bikini, High-waisted bikini, naked,naked, bachelorette, underwearing, underweared, nuke, nudity, bachelor, bottomless, underwear, bikini ,  bikini ,  bikini ,  bikini ,  bikini ,  bikini , topless,underwearing, underweared,underwearing, underweared, sexy, around current clothing,'
 
         if inpaint_additional_prompt is None:
             inpaint_additional_prompt = ''
