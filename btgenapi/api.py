@@ -298,7 +298,6 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
 
             # Define the GraphQL API endpoint for staging
             print(" ------------------ before request to graphql -----------")
-            print(url)
             url = "https://stage-graphql.beautifultechnologies.app/"
             if req.env == "PROD": 
                 url = "https://graphql.beautifultechnologies.app/"
