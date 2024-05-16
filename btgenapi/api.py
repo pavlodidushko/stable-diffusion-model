@@ -189,7 +189,7 @@ def long_text_to_img_with_ip(rawreq: LongText2ImgRequestWithPrompt,
             "variables": {
                 "data": {
                     "images":callback_payload_images,
-                    "isUserInput": req.isUserInput
+                    "isUserInput": rawreq.isUserInput
                 }
             }
         }
@@ -246,9 +246,6 @@ def generate_work(rawreq: SimpleText2ImgRequestWithPrompt):
 
     return result
 
-# def text_to_img_with_up_proc(req: Text2ImgRequestWithPromptMulti,
-#                         accept: str = Header(None),
-#                         accept_query: str | None = Query(None, alias='accept', description="Parameter to overvide 'Accept' header, 'image/png' for output bytes")):
 app.mount("/files", StaticFiles(directory=file_utils.output_dir), name="files")
                             
 
