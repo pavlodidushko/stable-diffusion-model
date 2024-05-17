@@ -192,7 +192,7 @@ def long_text_to_img_with_ip(rawreq: LongText2ImgRequestWithPrompt,
                     "isUserInput": rawreq.isUserInput
                 }
             }
-        }
+        }   
 
         # Define the headers
         headers = {
@@ -212,7 +212,7 @@ def long_text_to_img_with_ip(rawreq: LongText2ImgRequestWithPrompt,
 
         # Send the HTTP request using the `requests` library
         print("before request")
-        print(url)
+        print(url, graphql_request)
         requests.post(url, json=graphql_request, headers=headers)
 
         print("after request")
@@ -302,6 +302,7 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
             # url = "https://graphql.beautifultechnologies.app/"
 
             # Send the HTTP request using the `requests` library
+            print(graphql_request)
             response = requests.post(url, json=graphql_request, headers=headers)
             print(" ------------------ after request to graphql -----------")
 
