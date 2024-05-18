@@ -125,7 +125,7 @@ def process_generate(async_task: QueueTask):
         # Transform parameters
         params = async_task.req_param
 
-        prompt = params.prompt
+        prompt ="(full length:1.3),  shod, " + params.prompt
         style_selections = params.style_selections
 
         performance_selection = params.performance_selection
@@ -198,12 +198,12 @@ def process_generate(async_task: QueueTask):
 
         assert performance_selection in ['Speed', 'Quality', 'Extreme Speed']
 
-        steps = 40
+        steps = 15
         
         # performance_selection = 'Turbo Speed'
 
         if performance_selection == 'Speed':
-            steps = 40
+            steps = 15
 
         if performance_selection == 'Quality':
             steps = 60
@@ -394,8 +394,8 @@ def process_generate(async_task: QueueTask):
                 positive_basic_workloads = positive_basic_workloads + task_extra_positive_prompts
                 negative_basic_workloads = negative_basic_workloads + task_extra_negative_prompts
 
-                # positive_basic_workloads = remove_empty_str(positive_basic_workloads, default=task_prompt)
-                positive_basic_workloads = [task_prompt]
+                positive_basic_workloads = remove_empty_str(positive_basic_workloads, default=task_prompt)
+                # positive_basic_workloads = [task_prompt]
                 negative_basic_workloads = remove_empty_str(negative_basic_workloads, default=task_negative_prompt)
                 print("*************************", task_prompt)
                 
