@@ -262,8 +262,8 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
         if accept_query is not None and len(accept_query) > 0:
             accept = accept_query
         result = []
-        callback_payload_images = []
         for text_prompt in req.text_prompts:
+            callback_payload_images = []
         
             req.prompt = text_prompt
             tmp = generate_work(req)
@@ -273,45 +273,45 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
                 remote_url = result_url.replace("127.0.0.1:8887", vps_ip + ":9999")
                 item_result.url = remote_url
                 callback_payload_images.append({"url": remote_url, "prompt": text_prompt})
-        try:
-            # Define the GraphQL query and variables as a dictionary
-            graphql_request = {
-                "query": "mutation UpdateImagesGeneration($data: ImageGenerationInput!) { updateImagesGeneration(data: $data) { status }}",
-                "variables": {
-                    "data": {
-                        "images":callback_payload_images,
-                        "isUserInput": req.isUserInput
+            try:
+                # Define the GraphQL query and variables as a dictionary
+                graphql_request = {
+                    "query": "mutation UpdateImagesGeneration($data: ImageGenerationInput!) { updateImagesGeneration(data: $data) { status }}",
+                    "variables": {
+                        "data": {
+                            "images":callback_payload_images,
+                            "isUserInput": req.isUserInput
+                        }
                     }
                 }
-            }
 
-            # Define the headers
-            headers = {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "Authorization": "Bearer " + gToken,
-                "Cookie": "jgb_cs=s%3A96Q5_rfHS3EaRCEV6iKlsX7u_zm4naZD.yKB%2BJ35mmaGGryviAAagXeCrvkyAC9K4rCLjc4Xzd8c"
-            }
+                # Define the headers
+                headers = {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + gToken,
+                    "Cookie": "jgb_cs=s%3A96Q5_rfHS3EaRCEV6iKlsX7u_zm4naZD.yKB%2BJ35mmaGGryviAAagXeCrvkyAC9K4rCLjc4Xzd8c"
+                }
 
-            # Define the GraphQL API endpoint for staging
-            print(" ------------------ before request to graphql -----------")
-            url = "https://stage-graphql.beautifultechnologies.app/"
-            if req.env == "PROD": 
-                url = "https://graphql.beautifultechnologies.app/"
-            #Define the GraphQL API endpoint for production
-            # url = "https://graphql.beautifultechnologies.app/"
+                # Define the GraphQL API endpoint for staging
+                print(" ------------------ before request to graphql -----------")
+                url = "https://stage-graphql.beautifultechnologies.app/"
+                if req.env == "PROD": 
+                    url = "https://graphql.beautifultechnologies.app/"
+                #Define the GraphQL API endpoint for production
+                # url = "https://graphql.beautifultechnologies.app/"
 
-            # Send the HTTP request using the `requests` library
-            print(graphql_request)
-            response = requests.post(url, json=graphql_request, headers=headers)
-            print(" ------------------ after request to graphql -----------")
+                # Send the HTTP request using the `requests` library
+                print(graphql_request)
+                response = requests.post(url, json=graphql_request, headers=headers)
+                print(" ------------------ after request to graphql -----------")
 
-            # Print the response content and status code
-            print(response.content)
-            print(response.status_code)
-        except Exception as e:
+                # Print the response content and status code
+                print(response.content)
+                print(response.status_code)
+            except Exception as e:
 
-            print(e)
+                print(e)
 
         return result
 

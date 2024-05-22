@@ -12,6 +12,10 @@ from btgenapi.parameters import GenerationFinishReason, ImageGenerationResult, d
 from btgenapi.task_queue import QueueTask, TaskQueue, TaskOutputs
 import cv2
 
+from btgenapi.nsfw.nudenet import NudeDetector
+worker_queue: TaskQueue = None
+nudeDetector = NudeDetector()
+
 worker_queue: TaskQueue = None
 
 def process_top():
@@ -125,7 +129,7 @@ def process_generate(async_task: QueueTask):
         # Transform parameters
         params = async_task.req_param
 
-        prompt ="(full length:1.3),  shod, " + params.prompt
+        prompt ="(full length:1.4),(clothed:1.3),(best quality:1.2)  shod, "  + params.prompt
         style_selections = params.style_selections
 
         performance_selection = params.performance_selection
@@ -679,6 +683,16 @@ def process_generate(async_task: QueueTask):
 
                 if inpaint_worker.current_task is not None:
                     imgs = [inpaint_worker.current_task.post_process(x) for x in imgs]
+                censeredImages = []
+                for index, x in enumerate(imgs):
+                    print(" ------------- before nsfw --------------------")
+                    if nudeDetector.isNSFW(x) == False:
+                        censeredImages.append(x)
+                    else:
+                        print(" ----------------- nsfw detected --------------------")
+                        print(x)
+                    print(" ------------- after nsfw --------------------")
+                imgs = censeredImages                    
                 for index, x in enumerate(imgs):
                     if deep_upscale:
                         tmp = perform_upscale(x)
