@@ -262,9 +262,9 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
         if accept_query is not None and len(accept_query) > 0:
             accept = accept_query
         result = []
-        for text_prompt in req.text_prompts:
+        for index, text_prompt in req.text_prompts:
             callback_payload_images = []
-        
+
             req.prompt = text_prompt
             tmp = generate_work(req)
             for item_result in tmp:
@@ -280,10 +280,14 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
                     "variables": {
                         "data": {
                             "images":callback_payload_images,
-                            "isUserInput": req.isUserInput
+                            "isUserInput": req.isUserInput,
+                            "isMore": index < len(req.text_prompts)
                         }
                     }
                 }
+                print(" ----------------  graphql request -------------")
+                print(graphql_request)
+                print(" ----------------  graphql request -------------")
 
                 # Define the headers
                 headers = {
