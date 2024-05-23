@@ -132,7 +132,7 @@ def process_generate(async_task: QueueTask):
         # Transform parameters
         params = async_task.req_param
 
-        prompt ="(full length:1.4),(best quality:1.2)  shod, "  + params.prompt
+        prompt ="(full length:1.4),(clothed:1.3), (best quality:1.2)  shod, " + params.prompt
         style_selections = params.style_selections
 
         performance_selection = params.performance_selection
