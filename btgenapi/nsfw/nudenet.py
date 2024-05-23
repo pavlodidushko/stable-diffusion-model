@@ -146,7 +146,7 @@ class NudeDetector:
         detections = self.detect(image_path)
         isNSFW = False
         for detection in detections:
-            if detection['class'] == 'FEMALE_BREAST_EXPOSED' or detection['class'] == 'FEMALE_GENITALIA_EXPOSED' or detection["class"] =="BELLY_EXPOSED" or detection["class"] == "ANUS_EXPOSED":
+            if detection['class'] == 'FEMALE_BREAST_EXPOSED' or detection['class'] == 'FEMALE_GENITALIA_EXPOSED' or detection["class"] =="BELLY_EXPOSED" or detection["class"] == "ANUS_EXPOSED" or detection["class"] == "BUTTOCKS_EXPOSED":
                 isNSFW = True
         return isNSFW
     
