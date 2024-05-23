@@ -14,9 +14,12 @@ import cv2
 
 from btgenapi.nsfw.nudenet import NudeDetector
 worker_queue: TaskQueue = None
-nudeDetector = NudeDetector()
+nudeDetector = None
 
 worker_queue: TaskQueue = None
+
+
+
 
 def process_top():
     import ldm_patched.modules.model_management
@@ -129,7 +132,7 @@ def process_generate(async_task: QueueTask):
         # Transform parameters
         params = async_task.req_param
 
-        prompt ="(full length:1.4),(clothed:1.3),(best quality:1.2)  shod, "  + params.prompt
+        prompt ="(full length:1.4),(best quality:1.2)  shod, "  + params.prompt
         style_selections = params.style_selections
 
         performance_selection = params.performance_selection

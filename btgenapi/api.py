@@ -262,7 +262,7 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
         if accept_query is not None and len(accept_query) > 0:
             accept = accept_query
         result = []
-        for index, text_prompt in req.text_prompts:
+        for index, text_prompt in enumerate(req.text_prompts):
             callback_payload_images = []
 
             req.prompt = text_prompt
@@ -281,7 +281,7 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
                         "data": {
                             "images":callback_payload_images,
                             "isUserInput": req.isUserInput,
-                            "isMore": index < len(req.text_prompts)
+                            "isMore": index < len(req.text_prompts) - 1
                         }
                     }
                 }
