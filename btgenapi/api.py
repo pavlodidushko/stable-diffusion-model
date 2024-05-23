@@ -281,7 +281,7 @@ async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
                         "data": {
                             "images":callback_payload_images,
                             "isUserInput": req.isUserInput,
-                            "isMore": index < len(req.text_prompts) - 1
+                            # "isMore": index < len(req.text_prompts) - 1
                         }
                     }
                 }
