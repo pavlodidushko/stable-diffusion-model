@@ -174,6 +174,6 @@ class NudeDetector:
         return output_path
 
 
-if __name__ == "__main__":
-    detector = NudeDetector()
-    detections = detector.detect("/Users/praneeth.bedapudi/Desktop/images.jpeg")
+# if __name__ == "__main__":
+#     detector = NudeDetector()
+#     detections = detector.detect("/Users/praneeth.bedapudi/Desktop/images.jpeg")
