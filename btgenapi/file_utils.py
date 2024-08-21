@@ -10,18 +10,18 @@ output_dir = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', 'outputs', 'files'))
 os.makedirs(output_dir, exist_ok=True)
 
-static_serve_base_url = 'http://127.0.0.1:8887/files/'
+static_serve_base_url = 'http://69.197.187.75:8887/files/'
 
 
 def save_output_file(img: np.ndarray) -> str:
     current_time = datetime.datetime.now()
     date_string = current_time.strftime("%Y-%m-%d")
 
-    filename = os.path.join(date_string, str(uuid.uuid4()) + '.webp')
+    filename = os.path.join(date_string, str(uuid.uuid4()) + '.png')
     file_path = os.path.join(output_dir, filename)
 
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
-    Image.fromarray(img).save(file_path, format='WEBP')
+    Image.fromarray(img).save(file_path, format='PNG')
     return filename
 
 def delete_output_file(filename: str):

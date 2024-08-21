@@ -4,7 +4,7 @@ class ImagePromptJson(BaseModel):
     cn_img: str | None = Field(None, description="Input image for image prompt as base64")
     cn_stop: float | None = Field(0, ge=0, le=1, description="Stop at for image prompt, 0 for default value")
     cn_weight: float | None = Field(0, ge=0, le=2, description="Weight for image prompt, 0 for default value")
-    cn_type: ControlNetType = Field(default=ControlNetType.cn_ip_face, description="ControlNet type for image prompt")
+    cn_type: ControlNetType = Field(default=ControlNetType.cn_ip, description="ControlNet type for image prompt")
 
 class ImgInpaintOrOutpaintRequestJson(Text2ImgRequest):
     input_image: str = Field(description="Init image for inpaint or outpaint as base64")
@@ -29,6 +29,11 @@ class SimpleText2ImgRequestWithPrompt(BaseModel):
     token: str = ''
     deep_upscale: bool = False
     isUserInput: bool = False
+
+class SGText2ImgRequestWithPrompt(BaseModel):
+    prompt: str = ''
+    image_number: int = 10
+    image_prompts: List[str] = []
 
 class LongText2ImgRequestWithPrompt(BaseModel):
     longPrompt: str = ''

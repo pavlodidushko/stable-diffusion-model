@@ -69,7 +69,7 @@ class ImagePrompt(BaseModel):
     cn_img: UploadFile | None = Field(default=None)
     cn_stop: float | None = Field(default=None, ge=0, le=1)
     cn_weight: float | None = Field(default=None, ge=0, le=2, description="None for default value")
-    cn_type: ControlNetType = Field(default=ControlNetType.cn_ip_face)
+    cn_type: ControlNetType = Field(default=ControlNetType.cn_ip)
 
 
 class AdvancedParams(BaseModel):
@@ -383,12 +383,9 @@ class ImgPromptRequest(ImgInpaintOrOutpaintRequest):
 
 
 class GeneratedImageResult(BaseModel):
-    base64: str | None = Field(
-        description="Image encoded in base64, or null if finishReasen is not 'SUCCESS', only return when request require base64")
     url: str | None = Field(description="Image file static serve url, or null if finishReasen is not 'SUCCESS'")
     seed: str = Field(description="The seed associated with this image")
     finish_reason: GenerationFinishReason
-    isUserInput: bool = False
 
 
 class DescribeImageType(str, Enum):

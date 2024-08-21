@@ -12,9 +12,7 @@ from btgenapi.parameters import GenerationFinishReason, ImageGenerationResult, d
 from btgenapi.task_queue import QueueTask, TaskQueue, TaskOutputs
 import cv2
 
-from btgenapi.nsfw.nudenet import NudeDetector
 worker_queue: TaskQueue = None
-nudeDetector = None
 
 worker_queue: TaskQueue = None
 
@@ -132,7 +130,7 @@ def process_generate(async_task: QueueTask):
         # Transform parameters
         params = async_task.req_param
 
-        prompt ="(full length:1.4),(clothed:1.3), (best quality:1.2)  shod, " + params.prompt
+        prompt ="(best quality:1.2)" + params.prompt
         style_selections = params.style_selections
 
         performance_selection = params.performance_selection
@@ -205,7 +203,7 @@ def process_generate(async_task: QueueTask):
 
         assert performance_selection in ['Speed', 'Quality', 'Extreme Speed']
 
-        steps = 15
+        steps = 35
         
         # performance_selection = 'Turbo Speed'
 
@@ -252,7 +250,7 @@ def process_generate(async_task: QueueTask):
         cfg_scale = float(guidance_scale)
         print(f'[Parameters] CFG = {cfg_scale}')
 
-        initial_latent = None
+        initial_latent = None 
         denoising_strength = 1.0
         tiled = False
 
@@ -689,11 +687,7 @@ def process_generate(async_task: QueueTask):
                 censeredImages = []
                 for index, x in enumerate(imgs):
                     print(" ------------- before nsfw --------------------")
-                    if nudeDetector.isNSFW(x) == False:
-                        censeredImages.append(x)
-                    else:
-                        print(" ----------------- nsfw detected --------------------")
-                        print(x)
+                    censeredImages.append(x)
                     print(" ------------- after nsfw --------------------")
                 imgs = censeredImages                    
                 for index, x in enumerate(imgs):

@@ -146,9 +146,9 @@ def worker():
         cn_tasks = {x: [] for x in flags.ip_list}
         for _ in range(4):
             cn_img = args.pop()
-            cn_stop = 0.9
-            cn_weight = 0.7
-            cn_type = flags.cn_ip_face
+            cn_stop = 0.5
+            cn_weight = 0.6
+            cn_type = flags.cn_ip
             if cn_img is not None:
                 cn_tasks[cn_type].append([cn_img, cn_stop, cn_weight])
 

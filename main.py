@@ -252,7 +252,6 @@ def prepare_environments(args) -> bool:
 
     import modules.config as config
     import btgenapi.parameters as parameters
-    from btgenapi.nsfw.nudenet import NudeDetector
 
     parameters.default_inpaint_engine_version = config.default_inpaint_engine_version
     parameters.default_styles = config.default_styles
@@ -275,7 +274,6 @@ def prepare_environments(args) -> bool:
     from btgenapi.task_queue import TaskQueue
     worker.worker_queue = TaskQueue(queue_size=args.queue_size, hisotry_size=args.queue_history, webhook_url=args.webhook_url, persistent=args.persistent)
 
-    worker.nudeDetector = NudeDetector()
     return True
 
 

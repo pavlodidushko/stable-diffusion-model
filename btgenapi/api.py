@@ -145,91 +145,11 @@ def text_to_img_with_ip(rawreq: SimpleText2ImgRequestWithPrompt,
         img_prompt.cn_img = base64_to_stream(raw_img_prompt)
         image_prompts_files.append(img_prompt)
 
-@secure_router.post("/v2/generation/long-text-to-image-with-ip", response_model=List[GeneratedImageResult] | AsyncJobResponse, responses=img_generate_responses)
-def long_text_to_img_with_ip(rawreq: LongText2ImgRequestWithPrompt,
-                        accept: str = Header(None),
-                        accept_query: str | None = Query(None, alias='accept', description="Parameter to overvide 'Accept' header, 'image/png' for output bytes")):
-    
-    gToken = rawreq.token
-    if accept_query is not None and len(accept_query) > 0:
-        accept = accept_query
-    req = Text2ImgRequestWithPrompt()
-    req.image_number = rawreq.image_number
-    req.prompt = rawreq.longPrompt
-    req.isLongPrompt = True
-    req.deep_upscale = rawreq.deep_upscale
-    req.image_prompts = rawreq.image_prompts
-    default_image_promt = ImagePrompt(cn_img=None)
-    image_prompts_files: List[ImagePrompt] = []
-    for raw_img_prompt in rawreq.image_prompts:
-        img_prompt = ImagePrompt(cn_img=None)
-        img_prompt.cn_img = base64_to_stream(raw_img_prompt)
-        image_prompts_files.append(img_prompt)
-
-    req.image_prompts = image_prompts_files
-
-    result = []
-    tmp = call_worker(req, "application/json")
-    print("---- call worker finished ----", tmp)
-
-    callback_payload_images = []
-
-    for item_result in tmp:
-        result_url = item_result.url
-        remote_url = result_url.replace("127.0.0.1:8887", vps_ip + ":9999")
-        item_result.url = remote_url
-        callback_payload_images.append({"url": remote_url, "prompt": rawreq.longPrompt})
-        result.append(item_result)
-
-    print(" --------- post processing the urls -----------" , result)
-    try:
-        # Define the GraphQL query and variables as a dictionary
-        graphql_request = {
-            "query": "mutation UpdateImagesGeneration($data: ImageGenerationInput!) { updateImagesGeneration(data: $data) { status }}",
-            "variables": {
-                "data": {
-                    "images":callback_payload_images,
-                    "isUserInput": rawreq.isUserInput
-                }
-            }
-        }   
-
-        # Define the headers
-        headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": "Bearer " + gToken,
-            "Cookie": "jgb_cs=s%3A96Q5_rfHS3EaRCEV6iKlsX7u_zm4naZD.yKB%2BJ35mmaGGryviAAagXeCrvkyAC9K4rCLjc4Xzd8c"
-        }
-
-        # Define the GraphQL API endpoint for staging
-
-        url = "https://stage-graphql.beautifultechnologies.app/"
-        if rawreq.env == "PROD": 
-            url = "https://graphql.beautifultechnologies.app/"
-        #Define the GraphQL API endpoint for production
-        # url = "https://graphql.beautifultechnologies.app/"
-
-        # Send the HTTP request using the `requests` library
-        print("before request")
-        print(url, graphql_request)
-        requests.post(url, json=graphql_request, headers=headers)
-
-        print("after request")
-    except Exception as e:
-        print(e)
-    print(" --------------- return result ----------")
-    print(result)
-    print ( "----------------" )
-    return result
-
-
 def generate_work(rawreq: SimpleText2ImgRequestWithPrompt): 
     req = Text2ImgRequestWithPrompt()
     req.image_number = rawreq.image_number
     req.prompt = rawreq.prompt
     req.image_prompts = rawreq.image_prompts
-    req.deep_upscale = rawreq.deep_upscale
     default_image_promt = ImagePrompt(cn_img=None)
     image_prompts_files: List[ImagePrompt] = []
     for raw_img_prompt in rawreq.image_prompts:
@@ -250,73 +170,17 @@ app.mount("/files", StaticFiles(directory=file_utils.output_dir), name="files")
                             
 
 @secure_router.post("/v2/generation/text-to-image-with-ip-multi", response_model=List[GeneratedImageResult] | AsyncJobResponse, responses=img_generate_responses)
-async def text_to_img_with_ip(req: Text2ImgRequestWithPromptMulti,
+async def text_to_img_with_ip(req: SGText2ImgRequestWithPrompt,
                         accept: str = Header(None),
                         accept_query: str | None = Query(None, alias='accept', description="Parameter to overvide 'Accept' header, 'image/png' for output bytes")):
 
     lock = Lock()
     async with lock:
-        print(" -------------------------------------------- text-to-image-with-ip-multi -----------------")
-        gToken = req.token
-
-        if accept_query is not None and len(accept_query) > 0:
-            accept = accept_query
+        tmp = generate_work(req)
         result = []
-        for index, text_prompt in enumerate(req.text_prompts):
-            callback_payload_images = []
- 
-            req.prompt = text_prompt
-            tmp = generate_work(req)
-            for item_result in tmp:
-                result.append(item_result)
-                result_url = item_result.url
-                remote_url = result_url.replace("127.0.0.1:8887", vps_ip + ":9999")
-                item_result.url = remote_url
-                callback_payload_images.append({"url": remote_url, "prompt": text_prompt})
-            try:
-                # Define the GraphQL query and variables as a dictionary
-                graphql_request = {
-                    "query": "mutation UpdateImagesGeneration($data: ImageGenerationInput!) { updateImagesGeneration(data: $data) { status }}",
-                    "variables": {
-                        "data": {
-                            "images":callback_payload_images,
-                            "isUserInput": req.isUserInput,
-                            "isMore": index < len(req.text_prompts) - 1
-                        }
-                    }
-                }
-                print(" ----------------  graphql request -------------")
-                print(graphql_request)
-                print(" ----------------  graphql request -------------")
-
-                # Define the headers
-                headers = {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                    "Authorization": "Bearer " + gToken,
-                    "Cookie": "jgb_cs=s%3A96Q5_rfHS3EaRCEV6iKlsX7u_zm4naZD.yKB%2BJ35mmaGGryviAAagXeCrvkyAC9K4rCLjc4Xzd8c"
-                }
-
-                # Define the GraphQL API endpoint for staging
-                print(" ------------------ before request to graphql -----------")
-                url = "https://stage-graphql.beautifultechnologies.app/"
-                if req.env == "PROD": 
-                    url = "https://graphql.beautifultechnologies.app/"
-                #Define the GraphQL API endpoint for production
-                # url = "https://graphql.beautifultechnologies.app/"
-
-                # Send the HTTP request using the `requests` library
-                print(graphql_request)
-                response = requests.post(url, json=graphql_request, headers=headers)
-                print(" ------------------ after request to graphql -----------")
-
-                # Print the response content and status code
-                print(response.content)
-                print(response.status_code)
-            except Exception as e:
-
-                print(e)
-
+        for item in tmp:
+            item.url = item.url.replace("127.0.0.1", "69.197.187.75")
+            result.append(item)
         return result
 
 

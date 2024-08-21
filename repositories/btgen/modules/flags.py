@@ -25,14 +25,14 @@ cn_ip_face = "FaceSwap"
 cn_canny = "PyraCanny"
 cn_cpds = "CPDS"
 
-default_prompt = "  , on a full-length body , separate from image prompt selfies and irrespective of image prompt"
-negative_prompt = '  Two-piece, Bikini briefs, Monokini, Tankini, Triangle bikini, Bandeau bikini,Halter-neck bikini, High-waisted bikini, naked,naked, bachelorette, underwearing, underweared, nuke, nudity, bachelor, bottomless, underwear, bikini ,  bikini ,  bikini ,  bikini ,  bikini ,  bikini , topless,underwearing, underweared,underwearing, underweared, sexy, around current clothing, '
+default_prompt = " "
+negative_prompt = ''
 
 ip_list = [cn_ip, cn_canny, cn_cpds, cn_ip_face]
-default_ip = cn_ip_face
+default_ip = cn_ip
 
 default_parameters = {
-    cn_ip: (0.5, 0.6), cn_ip_face: (1.0, 0.9), cn_canny: (0.5, 1.0), cn_cpds: (0.5, 1.0)
+    cn_ip: (0.3, 0.4), cn_ip_face: (1.0, 0.9), cn_canny: (0.5, 1.0), cn_cpds: (0.5, 1.0)
 }  # stop, weight
 
 inpaint_engine_versions = ['None', 'v1', 'v2.5', 'v2.6']

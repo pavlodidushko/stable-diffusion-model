@@ -1,4 +1,4 @@
-name: btgen-api
+name: sggen-api
 channels:
   - defaults
 dependencies:
