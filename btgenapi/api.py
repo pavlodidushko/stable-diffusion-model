@@ -149,6 +149,7 @@ def generate_work(rawreq: SimpleText2ImgRequestWithPrompt):
     req = Text2ImgRequestWithPrompt()
     req.image_number = rawreq.image_number
     req.prompt = rawreq.prompt
+    req.isBase64 = rawreq.isBase64
     req.image_prompts = rawreq.image_prompts
     default_image_promt = ImagePrompt(cn_img=None)
     image_prompts_files: List[ImagePrompt] = []
@@ -176,13 +177,16 @@ async def text_to_img_with_ip(req: SGText2ImgRequestWithPrompt,
 
     lock = Lock()
     async with lock:
+        
         tmp = generate_work(req)
         result = []
         for item in tmp:
-            item.url = item.url.replace("127.0.0.1", "69.197.187.75")
+            if req.isBase64 == False:
+                item.url = item.url.replace("127.0.0.1", "69.197.187.75")
+            else:
+                item.url = item.url.replace("http://127.0.0.1:8887/files/", "")
             result.append(item)
         return result
-
 
 
 app.include_router(secure_router)

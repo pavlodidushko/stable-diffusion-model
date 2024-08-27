@@ -153,6 +153,7 @@ def req_to_params(req: Text2ImgRequest) -> ImageGenerationParams:
                                  aspect_ratios_selection=aspect_ratios_selection,
                                  image_number=image_number,
                                  image_seed=image_seed,
+                                 isBase64=req.isBase64,
                                  sharpness=sharpness,
                                  guidance_scale=guidance_scale,
                                  base_model_name=base_model_name,

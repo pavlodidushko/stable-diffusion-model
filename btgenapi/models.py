@@ -108,9 +108,10 @@ class AdvancedParams(BaseModel):
     inpaint_erode_or_dilate: int = Field(0, description="Mask Erode or Dilate", ge=-64, le=64)
 
 
-class Text2ImgRequest(BaseModel):
+class Text2ImgRequest(BaseModel):   
     prompt: str = ''
     isLongPrompt: bool = False
+    isBase64: bool = False
     isUserInput: bool = False
     deep_upscale: bool = False
     negative_prompt: str = default_prompt_negative

@@ -7,7 +7,7 @@ import re
 import logging
 
 from typing import List
-from btgenapi.file_utils import save_output_file
+from btgenapi.file_utils import save_output_file, ndarray_to_base64
 from btgenapi.parameters import GenerationFinishReason, ImageGenerationResult, default_prompt_positive, default_prompt_negative
 from btgenapi.task_queue import QueueTask, TaskQueue, TaskOutputs
 import cv2
@@ -113,7 +113,13 @@ def process_generate(async_task: QueueTask):
         for i, im in enumerate(imgs):
             seed = -1 if len(tasks) == 0 else tasks[i]['task_seed']
             img_filename = save_output_file(im)
-            results.append(ImageGenerationResult(im=img_filename, seed=str(seed), finish_reason=GenerationFinishReason.success))
+            print(" **************  ", isBase64)
+
+            if isBase64 == False:
+                results.append(ImageGenerationResult(im=img_filename,isBase64=False, seed=str(seed), finish_reason=GenerationFinishReason.success))
+            else: 
+                img_base64 = ndarray_to_base64(im)
+                results.append(ImageGenerationResult(im=img_base64,isBase64=True, seed=str(seed), finish_reason=GenerationFinishReason.success))
         async_task.set_result(results, False)
         worker_queue.finish_task(async_task.job_id)
         print(f"[Task Queue] Finish task, job_id={async_task.job_id}")
@@ -136,6 +142,7 @@ def process_generate(async_task: QueueTask):
         performance_selection = params.performance_selection
         aspect_ratios_selection = params.aspect_ratios_selection
         image_number = params.image_number
+        isBase64 = params.isBase64
         image_seed = None if params.image_seed == -1 else params.image_seed
         sharpness = params.sharpness
         guidance_scale = params.guidance_scale
@@ -208,7 +215,7 @@ def process_generate(async_task: QueueTask):
         # performance_selection = 'Turbo Speed'
 
         if performance_selection == 'Speed':
-            steps = 15
+            steps = 30
 
         if performance_selection == 'Quality':
             steps = 60

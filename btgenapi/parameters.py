@@ -70,9 +70,10 @@ class GenerationFinishReason(str, Enum):
 
 
 class ImageGenerationResult(object):
-    def __init__(self, im: str | None, seed: str, finish_reason: GenerationFinishReason):
+    def __init__(self, im: str | None, isBase64:bool, seed: str, finish_reason: GenerationFinishReason):
         self.im = im
         self.seed = seed
+        self.isBase64 = isBase64
         self.finish_reason = finish_reason
 
 
@@ -86,6 +87,7 @@ class ImageGenerationParams(object):
                  performance_selection: str,
                  aspect_ratios_selection: str,
                  image_number: int,
+                 isBase64: bool,
                  image_seed: int | None,
                  sharpness: float,
                  guidance_scale: float,
@@ -115,6 +117,7 @@ class ImageGenerationParams(object):
         self.performance_selection = performance_selection
         self.aspect_ratios_selection = aspect_ratios_selection
         self.image_number = image_number
+        self.isBase64 = isBase64
         self.image_seed = image_seed
         self.sharpness = sharpness
         self.guidance_scale = guidance_scale

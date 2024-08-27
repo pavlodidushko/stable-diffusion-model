@@ -29,11 +29,13 @@ class SimpleText2ImgRequestWithPrompt(BaseModel):
     token: str = ''
     deep_upscale: bool = False
     isUserInput: bool = False
+    isBase64: bool = False
 
 class SGText2ImgRequestWithPrompt(BaseModel):
     prompt: str = ''
     image_number: int = 10
     image_prompts: List[str] = []
+    isBase64: bool = False
 
 class LongText2ImgRequestWithPrompt(BaseModel):
     longPrompt: str = ''
